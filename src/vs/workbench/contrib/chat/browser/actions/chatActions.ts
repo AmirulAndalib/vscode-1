@@ -673,7 +673,7 @@ export function registerChatActions() {
 		}
 	});
 
-	const nonEnterpriseCopilotUsers = ContextKeyExpr.and(ChatContextKeys.enabled, ContextKeyExpr.notEquals(`config.${defaultChat.completionsAdvancedSetting}.authProvider`, defaultChat.enterpriseProviderId));
+	const nonEnterpriseCopilotUsers = ContextKeyExpr.and(ChatContextKeys.enabled, ContextKeyExpr.notEquals(`config.${defaultChat.completionsAdvancedSetting}.authProvider`, defaultChat.provider.enterprise.id));
 	registerAction2(class extends Action2 {
 		constructor() {
 			super({
@@ -901,7 +901,7 @@ const defaultChat = {
 	documentationUrl: product.defaultChatAgent?.documentationUrl ?? '',
 	manageSettingsUrl: product.defaultChatAgent?.manageSettingsUrl ?? '',
 	managePlanUrl: product.defaultChatAgent?.managePlanUrl ?? '',
-	enterpriseProviderId: product.defaultChatAgent?.enterpriseProviderId ?? '',
+	provider: product.defaultChatAgent?.provider ?? { enterprise: { id: '' } },
 	completionsAdvancedSetting: product.defaultChatAgent?.completionsAdvancedSetting ?? '',
 	completionsMenuCommand: product.defaultChatAgent?.completionsMenuCommand ?? '',
 };
@@ -1086,7 +1086,7 @@ const menuContext = ContextKeyExpr.and(
 	ChatContextKeys.Setup.disabled.negate()
 );
 
-const title = localize('copilot', "Copilot");
+const title = localize('ai actions', "AI Actions");
 
 MenuRegistry.appendMenuItem(MenuId.EditorContext, {
 	submenu: MenuId.ChatTextEditorMenu,
@@ -1131,7 +1131,7 @@ registerAction2(class ToggleDefaultVisibilityAction extends Action2 {
 	async run(accessor: ServicesAccessor) {
 		const configurationService = accessor.get(IConfigurationService);
 
-		const currentValue = configurationService.getValue<'hidden' | 'visibleInWorkspace' | 'visible'>('workbench.secondarySideBar.defaultVisibility');
+		const currentValue = configurationService.getValue<'hidden' | unknown>('workbench.secondarySideBar.defaultVisibility');
 		configurationService.updateValue('workbench.secondarySideBar.defaultVisibility', currentValue !== 'hidden' ? 'hidden' : 'visible');
 	}
 });
